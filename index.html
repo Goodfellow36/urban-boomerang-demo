@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urban Boomerang — Interactive Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --gold: #C9A84C;
+  --gold2: #E8C96A;
+  --green: #1DB87A;
+  --ink: #05080D;
+  --ink2: #080C13;
+  --ink3: #0D1219;
+  --ink4: #111820;
+  --cream: #F0EAD8;
+  --cr2: rgba(240,234,216,0.7);
+  --cr3: rgba(240,234,216,0.35);
+  --cr4: rgba(240,234,216,0.08);
+  --border: rgba(255,255,255,0.06);
+  --gold-dim: rgba(201,168,76,0.08);
+  --gold-border: rgba(201,168,76,0.25);
+  --green-dim: rgba(29,184,122,0.1);
+  --green-border: rgba(29,184,122,0.25);
+  --red: #EF4444;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #000;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-x: hidden;
+}
+
+/* BG */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(29,184,122,0.05) 0%, transparent 50%),
+              #000;
+  z-index: 0;
+}
+
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* LEFT SIDE */
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(36px, 5vw, 58px);
+  font-weight: 800;
+  color: var(--cream);
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  margin-bottom: 20px;
+}
+
+h1 span { color: var(--gold); }
+
+.desc {
+  font-size: 16px;
+  color: var(--cr3);
+  line-height: 1.75;
+  max-width: 400px;
+  margin-bottom: 36px;
+}
+
+.stats {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.stat-item { }
+.stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: -0.5px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--cr3);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--ink);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 13px 28px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+
+.btn-ghost {
+  color: var(--cr3);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 13px 24px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-ghost:hover { color: var(--cream); border-color: rgba(255,255,255,0.15); }
+
+.social-proof {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatars { display: flex; }
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--ink3);
+}
+.avatars .avatar:first-child { margin-left: 0; }
+
+.proof-text { font-size: 13px; color: var(--cr3); line-height: 1.5; }
+.proof-text strong { color: var(--cream); }
+
+/* PHONE */
+.phone-wrap {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.phone-device {
+  width: 320px;
+  height: 640px;
+  background: var(--ink);
+  border-radius: 44px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Notch */
+.phone-device::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 100;
+}
+
+/* Screens */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  background: var(--ink);
+}
+
+.screen.active { display: flex; }
+
+/* WELCOME SCREEN */
+.welcome-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  text-align: center;
+  background: var(--ink);
+}
+
+.welcome-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.welcome-logo svg { width: 44px; height: 44px; }
+
+.welcome-brand {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.welcome-tagline {
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.welcome-hero {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--cream);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+
+.welcome-hero span { color: var(--gold); }
+
+.welcome-sub {
+  font-size: 13px;
+  color: var(--cr3);
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.w-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  margin-bottom: 10px;
+  transition: all 0.15s;
+}
+
+.w-btn-primary { background: var(--gold); color: var(--ink); }
+.w-btn-primary:hover { opacity: 0.9; }
+.w-btn-secondary { background: var(--cr4); color: var(--cr3); border: 1px solid var(--border); }
+.w-btn-secondary:hover { color: var(--cream); }
+
+/* HOME SCREEN */
+.home-header {
+  padding: 52px 20px 16px;
+  background: linear-gradient(to bottom, var(--ink2), var(--ink));
+}
+
+.home-greeting {
+  font-size: 11px;
+  color: var(--cr3);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+.home-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--cream);
+  letter-spacing: -0.3px;
+}
+
+.home-card {
+  margin: 0 16px 16px;
+  background: var(--ink3);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.home-card-label {
+  font-size: 10px;
+  color: var(--cr3);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+
+.home-card-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.home-card-sub { font-size: 12px; color: var(--cr3); }
+
+.home-link-btn {
+  margin: 0 16px 16px;
+  background: var(--gold);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.home-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cream);
+  padding: 0 16px;
+  margin-bottom: 10px;
+}
+
+.initiative-row {
+  margin: 0 16px 8px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.init-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.init-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 3px;
+}
+
+.init-sub { font-size: 11px; color: var(--cr3); }
+
+.active-badge {
+  margin-left: auto;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: 50px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+/* DISCOVER SCREEN */
+.discover-header {
+  padding: 52px 20px 16px;
+}
+
+.screen-eyebrow {
+  font-size: 10px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+}
+
+.screen-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--cream);
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.cat-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+
+.cat-chip {
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--cr3);
+  background: var(--ink3);
+  transition: all 0.15s;
+}
+
+.cat-chip.active {
+  background: var(--gold-dim);
+  border-color: var(--gold-border);
+  color: var(--gold);
+}
+
+.retailer-card {
+  margin: 0 16px 10px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.retailer-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.retailer-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 2px;
+}
+
+.retailer-meta { font-size: 11px; color: var(--cr3); }
+
+.retailer-rate {
+  margin-left: auto;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rate-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.rate-lbl { font-size: 9px; color: var(--cr3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* GIVE SCREEN */
+.give-cats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.give-cat-card {
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.give-cat-card:hover { border-color: var(--gold-border); }
+.give-cat-card.selected { border-color: var(--gold-border); background: var(--gold-dim); }
+
+.give-cat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: var(--cr4);
+}
+
+.give-cat-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 3px;
+}
+
+.give-cat-count { font-size: 11px; color: var(--cr3); }
+.give-cat-arrow { margin-left: auto; color: var(--cr3); font-size: 18px; }
+
+/* PROFILE SCREEN */
+.profile-content { padding: 52px 16px 16px; overflow-y: auto; flex: 1; }
+
+.profile-avatar-wrap { text-align: center; margin-bottom: 20px; }
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  border: 2px solid var(--gold-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 10px;
+}
+
+.profile-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 4px;
+}
+
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.profile-stat {
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+
+.ps-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.ps-label { font-size: 10px; color: var(--cr3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+.dei-card {
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.dei-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cr3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dei-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.dei-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dei-company { font-size: 13px; color: var(--cream); flex: 1; }
+.dei-status { font-size: 11px; font-weight: 600; }
+
+.referral-box {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ref-label { font-size: 10px; color: var(--cr3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.ref-code {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+.ref-btn {
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* TAB BAR */
+.tab-bar {
+  display: flex;
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 20px;
+  flex-shrink: 0;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: all 0.15s;
+}
+
+.tab-icon { font-size: 20px; }
+.tab-label { font-size: 9px; font-weight: 600; color: var(--cr3); letter-spacing: 0.05em; }
+.tab-item.active .tab-label { color: var(--gold); }
+
+/* SCROLLABLE BODY */
+.screen-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.screen-body::-webkit-scrollbar { display: none; }
+
+/* PHONE GLOW */
+.phone-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* INSTRUCTION */
+.instruction {
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  color: rgba(240,234,216,0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.instruction::before, .instruction::after {
+  content: '·';
+  opacity: 0.5;
+}
+
+@media (max-width: 800px) {
+  .page-wrap { flex-direction: column; gap: 40px; }
+  .left { text-align: center; }
+  .desc { margin: 0 auto 36px; }
+  .stats { justify-content: center; }
+  .cta-row { justify-content: center; }
+  .social-proof { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="eyebrow">Live Interactive Demo</div>
+    <h1>Your dollars<br><span>come back home.</span></h1>
+    <p class="desc">Urban Boomerang turns everyday purchases into community investment. Every swipe at a partner retailer automatically funds the causes your community cares about.</p>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-val">$2.1T</div>
+        <div class="stat-label">Black buying power</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">3%</div>
+        <div class="stat-label">Avg. boomerang rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">7</div>
+        <div class="stat-label">Partner causes</div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a href="https://urbanboomerang.app" target="_blank" class="btn-primary">Join the Waitlist →</a>
+      <a href="https://retailers.urbanboomerang.app" target="_blank" class="btn-ghost">Become a Partner</a>
+    </div>
+
+    <div class="social-proof">
+      <div class="avatars">
+        <div class="avatar">👤</div>
+        <div class="avatar">👤</div>
+        <div class="avatar">👤</div>
+        <div class="avatar">👤</div>
+      </div>
+      <div class="proof-text">
+        <strong>Join the movement.</strong><br>
+        Shop with intent. Boomerang bigger.
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="phone-wrap">
+    <div class="phone-glow"></div>
+
+    <div class="phone-device">
+
+      <!-- WELCOME -->
+      <div class="screen welcome-screen active" id="screen-welcome">
+        <div class="welcome-logo">
+          <svg viewBox="0 0 44 44" fill="none">
+            <path d="M6 36 Q6 6 36 6 Q22 6 22 22 Q22 36 6 36Z" fill="none" stroke="#C9A84C" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="12" y="32" font-size="14" font-weight="800" fill="#C9A84C" font-family="sans-serif">UB</text>
+            <circle cx="34" cy="8" r="5" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+            <text x="31" y="11.5" font-size="7" fill="#C9A84C" font-family="sans-serif">$</text>
+          </svg>
+        </div>
+        <div class="welcome-brand">Urban Boomerang</div>
+        <div class="welcome-tagline">Shop With Intent</div>
+        <div class="welcome-hero">Your dollars<br><span>come back home.</span></div>
+        <div class="welcome-sub">Every purchase at a partner retailer automatically funds your community. No extra steps.</div>
+        <button class="w-btn w-btn-primary" onclick="goTo('home')">Get Started →</button>
+        <button class="w-btn w-btn-secondary" onclick="goTo('home')">I already have an account</button>
+      </div>
+
+      <!-- HOME -->
+      <div class="screen" id="screen-home" style="flex-direction:column;">
+        <div class="home-header">
+          <div class="home-greeting">Good afternoon,</div>
+          <div class="home-name">Troy 👋</div>
+        </div>
+        <div class="screen-body">
+          <div class="home-card">
+            <div class="home-card-label">Lifetime Boomeranged</div>
+            <div class="home-card-amount">$0.00</div>
+            <div class="home-card-sub">Link your card to start boomeranging</div>
+          </div>
+          <div class="home-link-btn" onclick="alert('Plaid card linking opens here — connects your debit or credit card securely')">💳  Link Your Card →</div>
+          <div class="home-section-title">Active Initiative</div>
+          <div class="initiative-row">
+            <div class="init-icon">🏈</div>
+            <div>
+              <div class="init-name">Prime Time Youth Foundation</div>
+              <div class="init-sub">Deion Sanders Jr. · Pro Athletes</div>
+            </div>
+            <div class="active-badge">✓ Active</div>
+          </div>
+          <div class="home-section-title" style="margin-top:12px;">Nearby Partners</div>
+          <div class="initiative-row">
+            <div class="init-icon">🏠</div>
+            <div>
+              <div class="init-name">Home Depot</div>
+              <div class="init-sub">Gold · 3% back · 0.4 mi</div>
+            </div>
+          </div>
+          <div class="initiative-row">
+            <div class="init-icon">🍔</div>
+            <div>
+              <div class="init-name">Shake Shack</div>
+              <div class="init-sub">Gold · 3% back · 0.8 mi</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item active" onclick="goTo('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+          <div class="tab-item" onclick="goTo('discover')"><div class="tab-icon">🧭</div><div class="tab-label">Discover</div></div>
+          <div class="tab-item" onclick="goTo('give')"><div class="tab-icon">🎯</div><div class="tab-label">Give</div></div>
+          <div class="tab-item" onclick="goTo('impact')"><div class="tab-icon">📊</div><div class="tab-label">Impact</div></div>
+          <div class="tab-item" onclick="goTo('profile')"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+        </div>
+      </div>
+
+      <!-- DISCOVER -->
+      <div class="screen" id="screen-discover" style="flex-direction:column;">
+        <div class="discover-header">
+          <div class="screen-eyebrow">Find Partners</div>
+          <div class="screen-title">Discover 🧭</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="cat-chip active">All</div>
+          <div class="cat-chip">Restaurant</div>
+          <div class="cat-chip">Coffee</div>
+          <div class="cat-chip">Grocery</div>
+          <div class="cat-chip">Beauty</div>
+          <div class="cat-chip">Gas</div>
+        </div>
+        <div class="screen-body">
+          <div style="padding:0 16px;margin-bottom:10px;font-size:10px;color:var(--cr3);text-transform:uppercase;letter-spacing:0.1em;">7 partners near Frisco, TX</div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(201,168,76,0.1);">🏠</div>
+            <div><div class="retailer-name">Home Depot</div><div class="retailer-meta">Frisco, TX · 0.4 mi · Home Improvement</div></div>
+            <div class="retailer-rate"><div class="rate-val">3%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(201,168,76,0.1);">🍔</div>
+            <div><div class="retailer-name">Shake Shack</div><div class="retailer-meta">Frisco, TX · 0.8 mi · Restaurant</div></div>
+            <div class="retailer-rate"><div class="rate-val">3%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(150,150,150,0.1);">👟</div>
+            <div><div class="retailer-name">Foot Locker</div><div class="retailer-meta">Frisco, TX · 1.1 mi · Apparel</div></div>
+            <div class="retailer-rate" style="color:#9CA3AF;"><div class="rate-val" style="color:#9CA3AF;">2%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(150,150,150,0.1);">💅</div>
+            <div><div class="retailer-name">Drybar</div><div class="retailer-meta">Frisco, TX · 1.4 mi · Beauty</div></div>
+            <div class="retailer-rate" style="color:#9CA3AF;"><div class="rate-val" style="color:#9CA3AF;">2%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(150,150,150,0.1);">🍓</div>
+            <div><div class="retailer-name">Jamba Juice</div><div class="retailer-meta">Frisco, TX · 1.7 mi · Coffee</div></div>
+            <div class="retailer-rate" style="color:#9CA3AF;"><div class="rate-val" style="color:#9CA3AF;">2%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(205,127,50,0.1);">🛒</div>
+            <div><div class="retailer-name">Whole Foods</div><div class="retailer-meta">Frisco, TX · 2.1 mi · Grocery</div></div>
+            <div class="retailer-rate" style="color:#CD7F32;"><div class="rate-val" style="color:#CD7F32;">1%</div><div class="rate-lbl">back</div></div>
+          </div>
+          <div class="retailer-card">
+            <div class="retailer-icon" style="background:rgba(205,127,50,0.1);">⛽</div>
+            <div><div class="retailer-name">Shell Gas</div><div class="retailer-meta">Frisco, TX · 2.4 mi · Gas Station</div></div>
+            <div class="retailer-rate" style="color:#CD7F32;"><div class="rate-val" style="color:#CD7F32;">1%</div><div class="rate-lbl">back</div></div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item" onclick="goTo('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+          <div class="tab-item active" onclick="goTo('discover')"><div class="tab-icon">🧭</div><div class="tab-label">Discover</div></div>
+          <div class="tab-item" onclick="goTo('give')"><div class="tab-icon">🎯</div><div class="tab-label">Give</div></div>
+          <div class="tab-item" onclick="goTo('impact')"><div class="tab-icon">📊</div><div class="tab-label">Impact</div></div>
+          <div class="tab-item" onclick="goTo('profile')"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+        </div>
+      </div>
+
+      <!-- GIVE -->
+      <div class="screen" id="screen-give" style="flex-direction:column;">
+        <div class="discover-header">
+          <div class="screen-eyebrow">Choose Your Cause</div>
+          <div class="screen-title">Give 🎯</div>
+        </div>
+        <div class="give-cats">
+          <div class="give-cat-card selected">
+            <div class="give-cat-icon">🏆</div>
+            <div><div class="give-cat-name">Pro Athletes</div><div class="give-cat-count">3 initiatives</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+          <div class="give-cat-card">
+            <div class="give-cat-icon">👶</div>
+            <div><div class="give-cat-name">Youth Programs</div><div class="give-cat-count">1 initiative</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+          <div class="give-cat-card">
+            <div class="give-cat-icon">🏠</div>
+            <div><div class="give-cat-name">Housing</div><div class="give-cat-count">1 initiative</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+          <div class="give-cat-card">
+            <div class="give-cat-icon">🔬</div>
+            <div><div class="give-cat-name">STEM</div><div class="give-cat-count">Coming soon</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+          <div class="give-cat-card">
+            <div class="give-cat-icon">🎓</div>
+            <div><div class="give-cat-name">Education</div><div class="give-cat-count">1 initiative</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+          <div class="give-cat-card">
+            <div class="give-cat-icon">💼</div>
+            <div><div class="give-cat-name">Business</div><div class="give-cat-count">1 initiative</div></div>
+            <div class="give-cat-arrow">›</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item" onclick="goTo('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+          <div class="tab-item" onclick="goTo('discover')"><div class="tab-icon">🧭</div><div class="tab-label">Discover</div></div>
+          <div class="tab-item active" onclick="goTo('give')"><div class="tab-icon">🎯</div><div class="tab-label">Give</div></div>
+          <div class="tab-item" onclick="goTo('impact')"><div class="tab-icon">📊</div><div class="tab-label">Impact</div></div>
+          <div class="tab-item" onclick="goTo('profile')"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+        </div>
+      </div>
+
+      <!-- IMPACT -->
+      <div class="screen" id="screen-impact" style="flex-direction:column;">
+        <div class="discover-header">
+          <div class="screen-eyebrow">Your Impact</div>
+          <div class="screen-title">Impact 📊</div>
+        </div>
+        <div class="screen-body" style="padding:0 16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div style="background:var(--ink3);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
+              <div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:var(--gold);">$0.00</div>
+              <div style="font-size:10px;color:var(--cr3);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Boomeranged</div>
+            </div>
+            <div style="background:var(--ink3);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
+              <div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:var(--green);">0</div>
+              <div style="font-size:10px;color:var(--cr3);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Friends Referred</div>
+            </div>
+          </div>
+          <div style="background:var(--ink3);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:10px;color:var(--cr3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Community Leaderboard</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;color:var(--gold);">🥇</div>
+              <div style="flex:1;font-size:13px;color:var(--cream);">Aaliyah M.</div>
+              <div style="font-size:13px;font-weight:700;color:var(--gold);">$842</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;color:var(--cr3);">🥈</div>
+              <div style="flex:1;font-size:13px;color:var(--cream);">Marcus J.</div>
+              <div style="font-size:13px;font-weight:700;color:var(--cr3);">$619</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;color:var(--cr3);">🥉</div>
+              <div style="flex:1;font-size:13px;color:var(--cream);">Denise W.</div>
+              <div style="font-size:13px;font-weight:700;color:var(--cr3);">$441</div>
+            </div>
+          </div>
+          <div style="background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:16px;padding:16px;text-align:center;">
+            <div style="font-size:13px;color:var(--cr3);margin-bottom:8px;">Share Urban Boomerang</div>
+            <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:var(--gold);">Invite friends → earn $5 per referral</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item" onclick="goTo('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+          <div class="tab-item" onclick="goTo('discover')"><div class="tab-icon">🧭</div><div class="tab-label">Discover</div></div>
+          <div class="tab-item" onclick="goTo('give')"><div class="tab-icon">🎯</div><div class="tab-label">Give</div></div>
+          <div class="tab-item active" onclick="goTo('impact')"><div class="tab-icon">📊</div><div class="tab-label">Impact</div></div>
+          <div class="tab-item" onclick="goTo('profile')"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="screen" id="screen-profile" style="flex-direction:column;">
+        <div class="profile-content">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-name">Troy Jones</div>
+            <div style="margin-top:8px;"><span class="profile-badge">🏆 Gold Status</span></div>
+          </div>
+          <div class="profile-stats">
+            <div class="profile-stat"><div class="ps-val">$0.00</div><div class="ps-label">Boomeranged</div></div>
+            <div class="profile-stat"><div class="ps-val">0</div><div class="ps-label">Referred</div></div>
+          </div>
+          <div class="dei-card">
+            <div class="dei-header">DEI Corporate Scorecard</div>
+            <div class="dei-row"><div class="dei-dot" style="background:#1DB87A;"></div><div class="dei-company">Target</div><div class="dei-status" style="color:#1DB87A;">DEI Active ✓</div></div>
+            <div class="dei-row"><div class="dei-dot" style="background:#1DB87A;"></div><div class="dei-company">Costco</div><div class="dei-status" style="color:#1DB87A;">Maintained ✓</div></div>
+            <div class="dei-row"><div class="dei-dot" style="background:#F59E0B;"></div><div class="dei-company">McDonald's</div><div class="dei-status" style="color:#F59E0B;">Under Review</div></div>
+            <div class="dei-row"><div class="dei-dot" style="background:#EF4444;"></div><div class="dei-company">Walmart</div><div class="dei-status" style="color:#EF4444;">DEI Rolled Back</div></div>
+          </div>
+          <div class="referral-box">
+            <div><div class="ref-label">Your Referral Code</div><div class="ref-code">TROYVSKX</div></div>
+            <button class="ref-btn">Share</button>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item" onclick="goTo('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+          <div class="tab-item" onclick="goTo('discover')"><div class="tab-icon">🧭</div><div class="tab-label">Discover</div></div>
+          <div class="tab-item" onclick="goTo('give')"><div class="tab-icon">🎯</div><div class="tab-label">Give</div></div>
+          <div class="tab-item" onclick="goTo('impact')"><div class="tab-icon">📊</div><div class="tab-label">Impact</div></div>
+          <div class="tab-item active" onclick="goTo('profile')"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="instruction">Tap the app to explore</div>
+  </div>
+
+</div>
+
+<script>
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById('screen-' + screen).classList.add('active')
+}
+</script>
+</body>
+</html>
